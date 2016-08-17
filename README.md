@@ -1,6 +1,6 @@
 # DuelReset
 
-This is a module for [AzerothCore](http://www.azerothcore.org) that adds duel reset features.
+This is a module for [AzerothCore](http://www.azerothcore.org) that adds some duel reset features.
 
 Current features:
 
@@ -33,7 +33,7 @@ If you need to change the module configuration, go to your server configuration 
 
 ## License
 
-This module is released under the [GNU APGL license](https://github.com/azerothcore/DuelReset/blob/master/LICENSE).
+This module is released under the [GNU AGPL license](https://github.com/azerothcore/DuelReset/blob/master/LICENSE).
 
 
 
