@@ -10,7 +10,7 @@ public:
     {
         if (!reload) {
             std::string conf_path = _CONF_DIR;
-            std::string cfg_file = conf_path + "/my_custom.conf";
+            std::string cfg_file = conf_path + "/duelreset.conf";
             std::string cfg_def_file = cfg_file +".dist";
 
             sConfigMgr->LoadMore(cfg_def_file.c_str());

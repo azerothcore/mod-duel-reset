@@ -1,8 +1,0 @@
-[worldserver]
-
-#
-# Enable Hello World message at server start 
-# default: false
-#
-
-MyCustom.enableHelloWorld=false
