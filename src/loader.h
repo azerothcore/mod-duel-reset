@@ -1,2 +1,2 @@
 void AddMyWorldScripts();
-void AddMyPlayerScripts();
+void AddDuelResetScripts();
