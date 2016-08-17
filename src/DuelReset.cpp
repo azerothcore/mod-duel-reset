@@ -31,7 +31,7 @@ class DuelResetScript : public PlayerScript
         void OnDuelStart(Player* player1, Player* player2) override
         {
             // Cooldowns reset
-            if (sConfigMgr->GetBoolDefault("DuelResetCooldowns", false))
+            if (sConfigMgr->GetBoolDefault("DuelResetCooldowns", true))
             {
                 /* TODO: convert this
                 player1->GetSpellHistory()->SaveCooldownStateBeforeDuel();
@@ -43,7 +43,7 @@ class DuelResetScript : public PlayerScript
             }
 
             // Health and mana reset
-            if (sConfigMgr->GetBoolDefault("DuelResetHealthMana", false))
+            if (sConfigMgr->GetBoolDefault("DuelResetHealthMana", true))
             {
                 player1->SaveHealthBeforeDuel();
                 player1->SetHealth(player1->GetMaxHealth());
@@ -74,8 +74,12 @@ class DuelResetScript : public PlayerScript
             if (type == DUEL_WON)
             {
                 // Cooldown restore
-                if (sConfigMgr->GetBoolDefault("DuelResetCooldowns", false))
+                if (sConfigMgr->GetBoolDefault("DuelResetCooldowns", true))
                 {
+                    // Temporary basic cooldown reset
+                    winner->RemoveArenaSpellCooldowns();
+                    loser->RemoveArenaSpellCooldowns();
+
                     /* TODO: convert this
                     ResetSpellCooldowns(winner, false);
                     ResetSpellCooldowns(loser, false);
@@ -86,7 +90,7 @@ class DuelResetScript : public PlayerScript
                 }
 
                 // Health and mana restore
-                if (sConfigMgr->GetBoolDefault("DuelResetHealthMana", false))
+                if (sConfigMgr->GetBoolDefault("DuelResetHealthMana", true))
                 {
                     winner->RestoreHealthAfterDuel();
                     loser->RestoreHealthAfterDuel();
