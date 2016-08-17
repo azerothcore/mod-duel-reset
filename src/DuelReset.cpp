@@ -33,6 +33,10 @@ class DuelResetScript : public PlayerScript
             // Cooldowns reset
             if (sConfigMgr->GetBoolDefault("DuelResetCooldowns", true))
             {
+                // Temporary basic cooldown reset
+                player1->RemoveArenaSpellCooldowns();
+                player2->RemoveArenaSpellCooldowns();
+
                 /* TODO: convert this
                 player1->GetSpellHistory()->SaveCooldownStateBeforeDuel();
                 player2->GetSpellHistory()->SaveCooldownStateBeforeDuel();
@@ -76,10 +80,6 @@ class DuelResetScript : public PlayerScript
                 // Cooldown restore
                 if (sConfigMgr->GetBoolDefault("DuelResetCooldowns", true))
                 {
-                    // Temporary basic cooldown reset
-                    winner->RemoveArenaSpellCooldowns();
-                    loser->RemoveArenaSpellCooldowns();
-
                     /* TODO: convert this
                     ResetSpellCooldowns(winner, false);
                     ResetSpellCooldowns(loser, false);
