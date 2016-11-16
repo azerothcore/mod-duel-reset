@@ -1,5 +1,5 @@
 void AddSC_DuelReset();
 
-void AddDuelResetScript() {
+void AddDuelResetScripts() {
     AddSC_DuelReset();
 }
