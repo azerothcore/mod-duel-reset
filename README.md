@@ -1,5 +1,7 @@
 # DuelReset
 
+- Latest DuelReset build status with azerothcore: [![Build Status](https://travis-ci.org/azerothcore/DuelReset.svg?branch=master)](https://travis-ci.org/azerothcore/DuelReset)
+
 This is a module for [AzerothCore](http://www.azerothcore.org) that adds some duel reset features.
 
 Current features:
