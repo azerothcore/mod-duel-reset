@@ -12,6 +12,12 @@ Current features:
 Upcoming features:
 - **Improved cooldown reset**: when duel starts it resets the player cooldowns, when duel ends it restores the cooldowns that the player had before the duel
 
+## Requirements
+
+Duel Reset module currently requires:
+
+AzerothCore v1.0.1+
+
 ## How to install
 
 ###1) Simply place the module under the `modules` folder of your AzerothCore source folder.
