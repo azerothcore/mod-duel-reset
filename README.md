@@ -1,6 +1,6 @@
 # DuelReset
 
-- Latest DuelReset build status with azerothcore: [![Build Status](https://travis-ci.org/azerothcore/DuelReset.svg?branch=master)](https://travis-ci.org/azerothcore/DuelReset)
+- Latest DuelReset build status with azerothcore: [![Build Status](https://travis-ci.org/azerothcore/mod-duelreset.svg?branch=master)](https://travis-ci.org/azerothcore/mod-duelreset)
 
 This is a module for [AzerothCore](http://www.azerothcore.org) that adds some duel reset features.
 
@@ -20,9 +20,9 @@ You can do clone it via git under the azerothcore/modules directory:
 
 `cd path/to/azerothcore/modules`
 
-`git clone https://github.com/azerothcore/DuelReset.git`
+`git clone https://github.com/azerothcore/mod-duelreset.git`
 
-or you can manually [download the module](https://github.com/azerothcore/DuelReset/archive/master.zip), unzip the DuelReset folder and place it under the `azerothcore/modules` directory.
+or you can manually [download the module](https://github.com/azerothcore/mod-duelreset/archive/master.zip), unzip the DuelReset folder and place it under the `azerothcore/modules` directory.
 
 ###2) Re-run cmake and launch a clean build of AzerothCore
 
@@ -35,7 +35,7 @@ If you need to change the module configuration, go to your server configuration 
 
 ## License
 
-This module is released under the [GNU AGPL license](https://github.com/azerothcore/DuelReset/blob/master/LICENSE).
+This module is released under the [GNU AGPL license](https://github.com/azerothcore/mod-duelreset/blob/master/LICENSE).
 
 
 
