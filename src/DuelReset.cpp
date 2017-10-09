@@ -106,9 +106,10 @@ class DuelResetScript : public PlayerScript
             }
         }
 
+        /* TODO: convert this
         static void ResetSpellCooldowns(Player* player, bool onStartDuel)
         {
-            /* TODO: convert this
+
             if (onStartDuel)
             {
                 // remove cooldowns on spells that have < 10 min CD > 30 sec and has no onHold
@@ -140,8 +141,9 @@ class DuelResetScript : public PlayerScript
             // pet cooldowns
             if (Pet* pet = player->GetPet())
                 pet->GetSpellHistory()->ResetAllCooldowns();
-            //*/
+            //
         }
+        */
 };
 
 class DuelResetWorld : public WorldScript
