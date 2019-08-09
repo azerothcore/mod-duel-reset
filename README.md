@@ -20,7 +20,7 @@ AzerothCore v1.0.1+
 
 ## How to install
 
-###1) Simply place the module under the `modules` folder of your AzerothCore source folder.
+### 1) Simply place the module under the `modules` folder of your AzerothCore source folder.
 
 You can do clone it via git under the azerothcore/modules directory:
 
@@ -30,7 +30,7 @@ You can do clone it via git under the azerothcore/modules directory:
 
 or you can manually [download the module](https://github.com/azerothcore/mod-duelreset/archive/master.zip), unzip the DuelReset folder and place it under the `azerothcore/modules` directory.
 
-###2) Re-run cmake and launch a clean build of AzerothCore
+### 2) Re-run cmake and launch a clean build of AzerothCore
 
 **That's it.**
 
