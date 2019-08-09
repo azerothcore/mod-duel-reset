@@ -2,7 +2,7 @@
 
 ![DuelReset](https://raw.githubusercontent.com/azerothcore/mod-duel-reset/master/icon.png)
 
-- Latest DuelReset build status with azerothcore: [![Build Status](https://travis-ci.org/azerothcore/mod-duelreset.svg?branch=master)](https://travis-ci.org/azerothcore/mod-duelreset)
+- Latest DuelReset build status with azerothcore: [![Build Status](https://travis-ci.org/azerothcore/mod-duel-reset.svg?branch=master)](https://travis-ci.org/azerothcore/mod-duel-reset)
 
 This is a module for [AzerothCore](http://www.azerothcore.org) that adds some duel reset features.
 
