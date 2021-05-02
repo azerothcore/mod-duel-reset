@@ -24,6 +24,15 @@
 #include "Config.h"
 #include "DuelReset.h"
 
+class DuelResetBeforeConfigLoad : public WorldScript {
+public:
+    DuelResetBeforeConfigLoad() : WorldScript("DuelResetBeforeConfigLoad") { }
+
+    void OnBeforeConfigLoad(bool /*reload*/) override {
+        sDuelReset->LoadConfig();
+    }
+};
+
 class DuelResetScript : public PlayerScript {
 public:
     DuelResetScript() : PlayerScript("DuelResetScript") {}
@@ -31,7 +40,7 @@ public:
     // Called when a duel starts (after 3s countdown)
     void OnDuelStart(Player *player1, Player *player2) override {
         // Cooldowns reset
-        if (sConfigMgr->GetBoolDefault("DuelResetCooldowns", true)) {
+        if (sDuelReset->GetCooldownEnabled()) {
             sDuelReset->SaveCooldownStateBeforeDuel(player1);
             sDuelReset->SaveCooldownStateBeforeDuel(player2);
 
@@ -40,7 +49,7 @@ public:
         }
 
         // Health and mana reset
-        if (sConfigMgr->GetBoolDefault("DuelResetHealthMana", true)) {
+        if (sDuelReset->GetHealthEnabled()) {
             sDuelReset->SaveHealthBeforeDuel(player1);
             if (player1->getPowerType() == POWER_MANA || player1->getClass() == CLASS_DRUID) {
                 sDuelReset->SaveManaBeforeDuel(player1);
@@ -60,7 +69,7 @@ public:
         // do not reset anything if DUEL_INTERRUPTED or DUEL_FLED
         if (type == DUEL_WON) {
             // Cooldown restore
-            if (sConfigMgr->GetBoolDefault("DuelResetCooldowns", true)) {
+            if (sDuelReset->GetCooldownEnabled()) {
                 sDuelReset->ResetSpellCooldowns(winner, false);
                 sDuelReset->ResetSpellCooldowns(loser, false);
 
@@ -69,7 +78,7 @@ public:
             }
 
             // Health and mana restore
-            if (sConfigMgr->GetBoolDefault("DuelResetHealthMana", true)) {
+            if (sDuelReset->GetHealthEnabled()) {
                 sDuelReset->RestoreHealthAfterDuel(winner);
                 sDuelReset->RestoreHealthAfterDuel(loser);
 
@@ -87,5 +96,6 @@ public:
 
 void AddSC_DuelReset()
 {
+    new DuelResetBeforeConfigLoad();
     new DuelResetScript();
 }

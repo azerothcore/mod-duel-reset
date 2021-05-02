@@ -12,6 +12,10 @@ class DuelReset
 public:
     static DuelReset* instance();
 
+    bool ResetCdEnabled;
+    bool ResetHealthEnabled;
+    uint64 CooldownAge;
+
     void ResetSpellCooldowns(Player* player, bool onStartDuel);
     void SaveCooldownStateBeforeDuel(Player* player);
     void RestoreCooldownStateAfterDuel(Player* player);
@@ -20,6 +24,12 @@ public:
     void SaveManaBeforeDuel(Player* player);
     void RestoreHealthAfterDuel(Player* player);
     void RestoreManaAfterDuel(Player* player);
+
+    void LoadConfig();
+
+    bool GetCooldownEnabled();
+    bool GetHealthEnabled();
+    uint32 GetCooldownAge();
 
 private:
     typedef std::unordered_map<Player*, SpellCooldowns> PlayersCooldownMap;

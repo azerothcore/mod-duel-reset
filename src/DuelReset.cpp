@@ -18,6 +18,7 @@
  */
 
 #include "DuelReset.h"
+#include "Config.h"
 
 DuelReset* DuelReset::instance()
 {
@@ -55,9 +56,9 @@ void DuelReset::ResetSpellCooldowns(Player* player, bool onStartDuel)
             && totalCooldown < 10 * MINUTE * IN_MILLISECONDS
             && categoryCooldown < 10 * MINUTE * IN_MILLISECONDS
             && remainingCooldown < 10 * MINUTE * IN_MILLISECONDS
-            && (onStartDuel ? (totalCooldown - remainingCooldown) > (MINUTE / 2) * IN_MILLISECONDS : true)
-            && (onStartDuel ? (categoryCooldown - remainingCooldown) > (MINUTE / 2) * IN_MILLISECONDS : true)
-                )
+            && (onStartDuel ? (totalCooldown - remainingCooldown) > CooldownAge * IN_MILLISECONDS : true)
+            && (onStartDuel ? (categoryCooldown - remainingCooldown) > CooldownAge * IN_MILLISECONDS : true)
+            )
             player->RemoveSpellCooldown(itr->first, true);
     }
 
@@ -156,4 +157,26 @@ void DuelReset::RestoreManaAfterDuel(Player* player) {
 
     player->SetPower(POWER_MANA, savedPlayerMana->second);
     m_manaBeforeDuel.erase(player);
+}
+
+void DuelReset::LoadConfig()
+{
+    ResetCdEnabled = sConfigMgr->GetBoolDefault("DuelReset.CooldownEnable", true);
+    ResetHealthEnabled = sConfigMgr->GetBoolDefault("DuelReset.HealthManaEnable", true);
+    CooldownAge = uint32(sConfigMgr->GetIntDefault("DuelReset.CooldownAge", 30));
+}
+
+bool DuelReset::GetCooldownEnabled()
+{
+    return ResetCdEnabled;
+}
+
+bool DuelReset::GetHealthEnabled()
+{
+    return ResetHealthEnabled;
+}
+
+uint32 DuelReset::GetCooldownAge()
+{
+    return CooldownAge;
 }
