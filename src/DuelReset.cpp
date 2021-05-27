@@ -85,6 +85,8 @@ void DuelReset::RestoreCooldownStateAfterDuel(Player* player)
     if (savedDuelCooldownsMap == m_spellCooldownsBeforeDuel.end())
         return;
 
+    sDuelReset->ResetSpellCooldowns(player, false);
+
     SpellCooldowns playerSavedDuelCooldowns = savedDuelCooldownsMap->second;
     uint32 curMSTime = World::GetGameTimeMS();
     uint32 infTime = curMSTime + player->infinityCooldownDelayCheck;
