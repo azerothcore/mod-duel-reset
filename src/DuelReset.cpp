@@ -162,6 +162,31 @@ void DuelReset::LoadConfig(bool /*reload*/)
 {
     m_enableCooldowns = sConfigMgr->GetBoolDefault("DuelReset.Cooldowns", true);
     m_enableHealth = sConfigMgr->GetBoolDefault("DuelReset.HealthMana", true);
+
+    FillWhitelist(sConfigMgr->GetStringDefault("DuelReset.Zones", "0"), m_zoneWhitelist);
+    FillWhitelist(sConfigMgr->GetStringDefault("DuelReset.Areas", "12;14;809"), m_areaWhitelist);
+}
+
+void DuelReset::FillWhitelist(std::string zonesAreas, std::vector<uint32> &whitelist)
+{
+    whitelist.clear();
+
+    if (zonesAreas.empty())
+        return;
+
+    std::string zone;
+    std::istringstream zoneStream(zonesAreas);
+    while (std::getline(zoneStream, zone, ';'))
+    {
+        whitelist.push_back(stoi(zone));
+    }
+}
+
+bool DuelReset::IsAllowedInArea(Player* player) const
+{
+    return (std::find(m_zoneWhitelist.begin(), m_zoneWhitelist.end(), player->GetZoneId()) != m_zoneWhitelist.end())
+        || (std::find(m_areaWhitelist.begin(), m_areaWhitelist.end(), player->GetAreaId()) != m_areaWhitelist.end())
+        || m_zoneWhitelist.empty();
 }
 
 bool DuelReset::GetResetCooldownsEnabled() const
@@ -172,4 +197,14 @@ bool DuelReset::GetResetCooldownsEnabled() const
 bool DuelReset::GetResetHealthEnabled() const
 {
     return m_enableHealth;
+}
+
+std::vector<uint32> DuelReset::GetZoneWhitelist() const
+{
+    return m_zoneWhitelist;
+}
+
+std::vector<uint32> DuelReset::GetAreaWhitelist() const
+{
+    return m_areaWhitelist;
 }

@@ -44,6 +44,11 @@ public:
 
     // Called when a duel starts (after 3s countdown)
     void OnDuelStart(Player *player1, Player *player2) override {
+        // Check if Reset is allowed in area or zone
+        if (!sDuelReset->IsAllowedInArea(player1)) {
+            return;
+        }
+
         // Cooldowns reset
         if (sDuelReset->GetResetCooldownsEnabled()) {
             sDuelReset->SaveCooldownStateBeforeDuel(player1);
@@ -71,6 +76,11 @@ public:
 
     // Called when a duel ends
     void OnDuelEnd(Player *winner, Player *loser, DuelCompleteType type) override {
+        // Check if Reset is allowed in area or zone
+        if (!sDuelReset->IsAllowedInArea(winner)) {
+            return;
+        }
+
         // do not reset anything if DUEL_INTERRUPTED or DUEL_FLED
         if (type == DUEL_WON) {
             // Cooldown restore

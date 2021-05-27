@@ -14,6 +14,7 @@ public:
     static DuelReset* instance();
 
     void LoadConfig(bool reload);
+    void FillWhitelist(std::string zonesAreas, std::vector<uint32> &whitelist);
 
     void ResetSpellCooldowns(Player* player, bool onStartDuel);
     void SaveCooldownStateBeforeDuel(Player* player);
@@ -24,12 +25,17 @@ public:
     void RestoreHealthAfterDuel(Player* player);
     void RestoreManaAfterDuel(Player* player);
 
+    bool IsAllowedInArea(Player* player) const;
     bool GetResetCooldownsEnabled() const;
     bool GetResetHealthEnabled() const;
+    std::vector<uint32> GetZoneWhitelist() const;
+    std::vector<uint32> GetAreaWhitelist() const;
 private:
     // Config values
     bool m_enableCooldowns;
     bool m_enableHealth;
+    std::vector<uint32> m_zoneWhitelist;
+    std::vector<uint32> m_areaWhitelist;
 
     // Player value maps
     typedef std::unordered_map<Player*, SpellCooldowns> PlayersCooldownMap;

@@ -11,7 +11,7 @@ Current features:
 
 - **Health/mana reset**: when duel starts it sets the health/mana of the player to the MAX, when the duel ends it restores the health/mana values that the player had before the duel
 - **Cooldown reset**: when duel starts it resets the player cooldowns
-
+- **Reset zones/areas**: specify the zones and areas where the resets actually apply
 
 ## Requirements
 
