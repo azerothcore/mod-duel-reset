@@ -157,3 +157,19 @@ void DuelReset::RestoreManaAfterDuel(Player* player) {
     player->SetPower(POWER_MANA, savedPlayerMana->second);
     m_manaBeforeDuel.erase(player);
 }
+
+void DuelReset::LoadConfig(bool /*reload*/)
+{
+    m_enableCooldowns = sConfigMgr->GetBoolDefault("DuelReset.Cooldowns", true);
+    m_enableHealth = sConfigMgr->GetBoolDefault("DuelReset.HealthMana", true);
+}
+
+bool DuelReset::GetResetCooldownsEnabled() const
+{
+    return m_enableCooldowns;
+}
+
+bool DuelReset::GetResetHealthEnabled() const
+{
+    return m_enableHealth;
+}

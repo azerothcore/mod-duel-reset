@@ -5,12 +5,15 @@
 #include "Player.h"
 #include "Pet.h"
 #include "SpellInfo.h"
+#include "Config.h"
 #include <unordered_map>
 
 class DuelReset
 {
 public:
     static DuelReset* instance();
+
+    void LoadConfig(bool reload);
 
     void ResetSpellCooldowns(Player* player, bool onStartDuel);
     void SaveCooldownStateBeforeDuel(Player* player);
@@ -21,7 +24,14 @@ public:
     void RestoreHealthAfterDuel(Player* player);
     void RestoreManaAfterDuel(Player* player);
 
+    bool GetResetCooldownsEnabled() const;
+    bool GetResetHealthEnabled() const;
 private:
+    // Config values
+    bool m_enableCooldowns;
+    bool m_enableHealth;
+
+    // Player value maps
     typedef std::unordered_map<Player*, SpellCooldowns> PlayersCooldownMap;
     typedef std::unordered_map<Player*, uint32> PlayersHealthMap;
     typedef std::unordered_map<Player*, uint32> PlayersManaMap;

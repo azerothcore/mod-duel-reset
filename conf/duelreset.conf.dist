@@ -1,16 +1,16 @@
 [worldserver]
 
 #
-#    DuelResetCooldowns
+#    DuelReset.Cooldowns
 #        Description: Reset all cooldowns before duel starts and restore them when duel ends.
 #        Default:     1  - (Enabled)
 #                     0  - (Disabled)
 
-DuelResetCooldowns = 1
+DuelReset.Cooldowns = 1
 
-#    DuelResetHealthMana
+#    DuelReset.HealthMana
 #        Description: Reset health and mana before duel starts and restore them when duel ends.
 #        Default:     1  - (Enabled)
 #                     0  - (Disabled)
 
-DuelResetHealthMana = 1
+DuelReset.HealthMana = 1
