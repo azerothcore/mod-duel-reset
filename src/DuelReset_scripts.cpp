@@ -104,6 +104,6 @@ public:
 
 void AddSC_DuelReset()
 {
-    new DuelResetAfterConfigLoad;
+    new DuelResetAfterConfigLoad();
     new DuelResetScript();
 }
