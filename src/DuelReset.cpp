@@ -18,7 +18,6 @@
  */
 
 #include "DuelReset.h"
-#include "Config.h"
 
 DuelReset* DuelReset::instance()
 {
@@ -56,8 +55,8 @@ void DuelReset::ResetSpellCooldowns(Player* player, bool onStartDuel)
             && totalCooldown < 10 * MINUTE * IN_MILLISECONDS
             && categoryCooldown < 10 * MINUTE * IN_MILLISECONDS
             && remainingCooldown < 10 * MINUTE * IN_MILLISECONDS
-            && (onStartDuel ? (totalCooldown - remainingCooldown) > CooldownAge * IN_MILLISECONDS : true)
-            && (onStartDuel ? (categoryCooldown - remainingCooldown) > CooldownAge * IN_MILLISECONDS : true)
+            && (onStartDuel ? (totalCooldown - remainingCooldown) > m_cooldownAge * IN_MILLISECONDS : true)
+            && (onStartDuel ? (categoryCooldown - remainingCooldown) > m_cooldownAge * IN_MILLISECONDS : true)
             )
             player->RemoveSpellCooldown(itr->first, true);
     }
@@ -85,6 +84,8 @@ void DuelReset::RestoreCooldownStateAfterDuel(Player* player)
     PlayersCooldownMap::iterator savedDuelCooldownsMap = m_spellCooldownsBeforeDuel.find(player);
     if (savedDuelCooldownsMap == m_spellCooldownsBeforeDuel.end())
         return;
+
+    sDuelReset->ResetSpellCooldowns(player, false);
 
     SpellCooldowns playerSavedDuelCooldowns = savedDuelCooldownsMap->second;
     uint32 curMSTime = World::GetGameTimeMS();
@@ -159,24 +160,59 @@ void DuelReset::RestoreManaAfterDuel(Player* player) {
     m_manaBeforeDuel.erase(player);
 }
 
-void DuelReset::LoadConfig()
+void DuelReset::LoadConfig(bool /*reload*/)
 {
-    ResetCdEnabled = sConfigMgr->GetBoolDefault("DuelReset.CooldownEnable", true);
-    ResetHealthEnabled = sConfigMgr->GetBoolDefault("DuelReset.HealthManaEnable", true);
-    CooldownAge = uint32(sConfigMgr->GetIntDefault("DuelReset.CooldownAge", 30));
+    m_enableCooldowns = sConfigMgr->GetBoolDefault("DuelReset.Cooldowns", true);
+    m_enableHealth = sConfigMgr->GetBoolDefault("DuelReset.HealthMana", true);
+    m_cooldownAge = uint32(sConfigMgr->GetIntDefault("DuelReset.CooldownAge", 30));
+
+    FillWhitelist(sConfigMgr->GetStringDefault("DuelReset.Zones", "0"), m_zoneWhitelist);
+    FillWhitelist(sConfigMgr->GetStringDefault("DuelReset.Areas", "12;14;809"), m_areaWhitelist);
 }
 
-bool DuelReset::GetCooldownEnabled()
+void DuelReset::FillWhitelist(std::string zonesAreas, std::vector<uint32> &whitelist)
 {
-    return ResetCdEnabled;
+    whitelist.clear();
+
+    if (zonesAreas.empty())
+        return;
+
+    std::string zone;
+    std::istringstream zoneStream(zonesAreas);
+    while (std::getline(zoneStream, zone, ';'))
+    {
+        whitelist.push_back(stoi(zone));
+    }
 }
 
-bool DuelReset::GetHealthEnabled()
+bool DuelReset::IsAllowedInArea(Player* player) const
 {
-    return ResetHealthEnabled;
+    return (std::find(m_zoneWhitelist.begin(), m_zoneWhitelist.end(), player->GetZoneId()) != m_zoneWhitelist.end())
+        || (std::find(m_areaWhitelist.begin(), m_areaWhitelist.end(), player->GetAreaId()) != m_areaWhitelist.end())
+        || m_zoneWhitelist.empty();
 }
 
-uint32 DuelReset::GetCooldownAge()
+bool DuelReset::GetResetCooldownsEnabled() const
 {
-    return CooldownAge;
+    return m_enableCooldowns;
+}
+
+bool DuelReset::GetResetHealthEnabled() const
+{
+    return m_enableHealth;
+}
+
+uint32 DuelReset::GetCooldownAge() const
+{
+    return m_cooldownAge;
+}
+
+std::vector<uint32> DuelReset::GetZoneWhitelist() const
+{
+    return m_zoneWhitelist;
+}
+
+std::vector<uint32> DuelReset::GetAreaWhitelist() const
+{
+    return m_areaWhitelist;
 }

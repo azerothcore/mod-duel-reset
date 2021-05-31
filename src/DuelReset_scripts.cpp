@@ -21,15 +21,20 @@
 #include "Player.h"
 #include "Pet.h"
 #include "SpellInfo.h"
-#include "Config.h"
 #include "DuelReset.h"
 
-class DuelResetBeforeConfigLoad : public WorldScript {
+class DuelResetAfterConfigLoad : public WorldScript {
 public:
-    DuelResetBeforeConfigLoad() : WorldScript("DuelResetBeforeConfigLoad") { }
+    DuelResetAfterConfigLoad() : WorldScript("DuelResetAfterConfigLoad") { }
 
-    void OnBeforeConfigLoad(bool /*reload*/) override {
-        sDuelReset->LoadConfig();
+    void OnAfterConfigLoad(bool reload) override
+    {
+        sDuelReset->LoadConfig(reload);
+    }
+
+    void OnStartup() override
+    {
+        sDuelReset->LoadConfig(false);
     }
 };
 
@@ -39,8 +44,13 @@ public:
 
     // Called when a duel starts (after 3s countdown)
     void OnDuelStart(Player *player1, Player *player2) override {
+        // Check if Reset is allowed in area or zone
+        if (!sDuelReset->IsAllowedInArea(player1)) {
+            return;
+        }
+
         // Cooldowns reset
-        if (sDuelReset->GetCooldownEnabled()) {
+        if (sDuelReset->GetResetCooldownsEnabled()) {
             sDuelReset->SaveCooldownStateBeforeDuel(player1);
             sDuelReset->SaveCooldownStateBeforeDuel(player2);
 
@@ -49,7 +59,7 @@ public:
         }
 
         // Health and mana reset
-        if (sDuelReset->GetHealthEnabled()) {
+        if (sDuelReset->GetResetHealthEnabled()) {
             sDuelReset->SaveHealthBeforeDuel(player1);
             if (player1->getPowerType() == POWER_MANA || player1->getClass() == CLASS_DRUID) {
                 sDuelReset->SaveManaBeforeDuel(player1);
@@ -66,19 +76,17 @@ public:
 
     // Called when a duel ends
     void OnDuelEnd(Player *winner, Player *loser, DuelCompleteType type) override {
+        // Checking zone here is not necessary and would open options or abuse
         // do not reset anything if DUEL_INTERRUPTED or DUEL_FLED
         if (type == DUEL_WON) {
             // Cooldown restore
-            if (sDuelReset->GetCooldownEnabled()) {
-                sDuelReset->ResetSpellCooldowns(winner, false);
-                sDuelReset->ResetSpellCooldowns(loser, false);
-
+            if (sDuelReset->GetResetCooldownsEnabled()) {
                 sDuelReset->RestoreCooldownStateAfterDuel(winner);
                 sDuelReset->RestoreCooldownStateAfterDuel(loser);
             }
 
             // Health and mana restore
-            if (sDuelReset->GetHealthEnabled()) {
+            if (sDuelReset->GetResetHealthEnabled()) {
                 sDuelReset->RestoreHealthAfterDuel(winner);
                 sDuelReset->RestoreHealthAfterDuel(loser);
 
@@ -96,6 +104,6 @@ public:
 
 void AddSC_DuelReset()
 {
-    new DuelResetBeforeConfigLoad();
+    new DuelResetAfterConfigLoad();
     new DuelResetScript();
 }

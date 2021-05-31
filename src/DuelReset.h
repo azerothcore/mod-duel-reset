@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Pet.h"
 #include "SpellInfo.h"
+#include "Config.h"
 #include <unordered_map>
 
 class DuelReset
@@ -12,9 +13,8 @@ class DuelReset
 public:
     static DuelReset* instance();
 
-    bool ResetCdEnabled;
-    bool ResetHealthEnabled;
-    uint64 CooldownAge;
+    void LoadConfig(bool reload);
+    void FillWhitelist(std::string zonesAreas, std::vector<uint32> &whitelist);
 
     void ResetSpellCooldowns(Player* player, bool onStartDuel);
     void SaveCooldownStateBeforeDuel(Player* player);
@@ -25,13 +25,21 @@ public:
     void RestoreHealthAfterDuel(Player* player);
     void RestoreManaAfterDuel(Player* player);
 
-    void LoadConfig();
-
-    bool GetCooldownEnabled();
-    bool GetHealthEnabled();
-    uint32 GetCooldownAge();
-
+    bool IsAllowedInArea(Player* player) const;
+    bool GetResetCooldownsEnabled() const;
+    bool GetResetHealthEnabled() const;
+    uint32 GetCooldownAge() const;
+    std::vector<uint32> GetZoneWhitelist() const;
+    std::vector<uint32> GetAreaWhitelist() const;
 private:
+    // Config values
+    bool m_enableCooldowns;
+    bool m_enableHealth;
+    uint32 m_cooldownAge;
+    std::vector<uint32> m_zoneWhitelist;
+    std::vector<uint32> m_areaWhitelist;
+
+    // Player value maps
     typedef std::unordered_map<Player*, SpellCooldowns> PlayersCooldownMap;
     typedef std::unordered_map<Player*, uint32> PlayersHealthMap;
     typedef std::unordered_map<Player*, uint32> PlayersManaMap;
