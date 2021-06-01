@@ -55,9 +55,9 @@ void DuelReset::ResetSpellCooldowns(Player* player, bool onStartDuel)
             && totalCooldown < 10 * MINUTE * IN_MILLISECONDS
             && categoryCooldown < 10 * MINUTE * IN_MILLISECONDS
             && remainingCooldown < 10 * MINUTE * IN_MILLISECONDS
-            && (onStartDuel ? (totalCooldown - remainingCooldown) > (MINUTE / 2) * IN_MILLISECONDS : true)
-            && (onStartDuel ? (categoryCooldown - remainingCooldown) > (MINUTE / 2) * IN_MILLISECONDS : true)
-                )
+            && (onStartDuel ? (totalCooldown - remainingCooldown) > m_cooldownAge * IN_MILLISECONDS : true)
+            && (onStartDuel ? (categoryCooldown - remainingCooldown) > m_cooldownAge * IN_MILLISECONDS : true)
+            )
             player->RemoveSpellCooldown(itr->first, true);
     }
 
@@ -164,6 +164,7 @@ void DuelReset::LoadConfig(bool /*reload*/)
 {
     m_enableCooldowns = sConfigMgr->GetBoolDefault("DuelReset.Cooldowns", true);
     m_enableHealth = sConfigMgr->GetBoolDefault("DuelReset.HealthMana", true);
+    m_cooldownAge = uint32(sConfigMgr->GetIntDefault("DuelReset.CooldownAge", 30));
 
     FillWhitelist(sConfigMgr->GetStringDefault("DuelReset.Zones", "0"), m_zoneWhitelist);
     FillWhitelist(sConfigMgr->GetStringDefault("DuelReset.Areas", "12;14;809"), m_areaWhitelist);
@@ -199,6 +200,11 @@ bool DuelReset::GetResetCooldownsEnabled() const
 bool DuelReset::GetResetHealthEnabled() const
 {
     return m_enableHealth;
+}
+
+uint32 DuelReset::GetCooldownAge() const
+{
+    return m_cooldownAge;
 }
 
 std::vector<uint32> DuelReset::GetZoneWhitelist() const

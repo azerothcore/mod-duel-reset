@@ -28,12 +28,14 @@ public:
     bool IsAllowedInArea(Player* player) const;
     bool GetResetCooldownsEnabled() const;
     bool GetResetHealthEnabled() const;
+    uint32 GetCooldownAge() const;
     std::vector<uint32> GetZoneWhitelist() const;
     std::vector<uint32> GetAreaWhitelist() const;
 private:
     // Config values
     bool m_enableCooldowns;
     bool m_enableHealth;
+    uint32 m_cooldownAge;
     std::vector<uint32> m_zoneWhitelist;
     std::vector<uint32> m_areaWhitelist;
 
