@@ -96,8 +96,10 @@ void DuelReset::RestoreCooldownStateAfterDuel(Player* player)
     {
         SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(itr->first);
 
-        if (spellInfo->RecoveryTime > 10 * MINUTE * IN_MILLISECONDS || spellInfo->CategoryRecoveryTime > 10 * MINUTE * IN_MILLISECONDS)
+        if (spellInfo && (spellInfo->RecoveryTime > 10 * MINUTE * IN_MILLISECONDS || spellInfo->CategoryRecoveryTime > 10 * MINUTE * IN_MILLISECONDS))
+        {
             playerSavedDuelCooldowns[itr->first] = player->GetSpellCooldownMap()[itr->first];
+        }
     }
 
     // check for spell with infinity delay active before and during the duel
