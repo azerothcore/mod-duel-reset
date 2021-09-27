@@ -1,5 +1,5 @@
 void AddSC_DuelReset();
 
-void Addmod_duel_resetScripts() {
+void Addmod_duelresetScripts() {
     AddSC_DuelReset();
 }
