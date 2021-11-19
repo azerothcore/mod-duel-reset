@@ -77,8 +77,8 @@ public:
     // Called when a duel ends
     void OnDuelEnd(Player *winner, Player *loser, DuelCompleteType type) override {
         // Checking zone here is not necessary and would open options or abuse
-        // do not reset anything if DUEL_INTERRUPTED or DUEL_FLED
-        if (type == DUEL_WON) {
+        // do not reset anything if DuelCompleteType::Interrupted or DuelCompleteType::Fled
+        if (type == DuelCompleteType::Won) {
             // Cooldown restore
             if (sDuelReset->GetResetCooldownsEnabled()) {
                 sDuelReset->RestoreCooldownStateAfterDuel(winner);
