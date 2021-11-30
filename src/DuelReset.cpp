@@ -130,7 +130,8 @@ void DuelReset::RestoreCooldownStateAfterDuel(Player* player)
     player->SendDirectMessage(&data);
 }
 
-void DuelReset::SaveHealthBeforeDuel(Player* player) {
+void DuelReset::SaveHealthBeforeDuel(Player* player)
+{
     if(!player)
         return;
 
@@ -164,12 +165,12 @@ void DuelReset::RestoreManaAfterDuel(Player* player) {
 
 void DuelReset::LoadConfig(bool /*reload*/)
 {
-    m_enableCooldowns = sConfigMgr->GetBoolDefault("DuelReset.Cooldowns", true);
-    m_enableHealth = sConfigMgr->GetBoolDefault("DuelReset.HealthMana", true);
-    m_cooldownAge = uint32(sConfigMgr->GetIntDefault("DuelReset.CooldownAge", 30));
+    m_enableCooldowns = sConfigMgr->GetOption<bool>("DuelReset.Cooldowns", true);
+    m_enableHealth = sConfigMgr->GetOption<bool>("DuelReset.HealthMana", true);
+    m_cooldownAge = sConfigMgr->GetOption<uint32>("DuelReset.CooldownAge", 30);
 
-    FillWhitelist(sConfigMgr->GetStringDefault("DuelReset.Zones", "0"), m_zoneWhitelist);
-    FillWhitelist(sConfigMgr->GetStringDefault("DuelReset.Areas", "12;14;809"), m_areaWhitelist);
+    FillWhitelist(sConfigMgr->GetOption<std::string>("DuelReset.Zones", "0"), m_zoneWhitelist);
+    FillWhitelist(sConfigMgr->GetOption<std::string>("DuelReset.Areas", "12;14;809"), m_areaWhitelist);
 }
 
 void DuelReset::FillWhitelist(std::string zonesAreas, std::vector<uint32> &whitelist)
