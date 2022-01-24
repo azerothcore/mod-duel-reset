@@ -18,6 +18,7 @@
  */
 
 #include "DuelReset.h"
+#include "GameTime.h"
 
 DuelReset* DuelReset::instance()
 {
@@ -27,7 +28,7 @@ DuelReset* DuelReset::instance()
 
 void DuelReset::ResetSpellCooldowns(Player* player, bool onStartDuel)
 {
-    uint32 infTime = World::GetGameTimeMS() + infinityCooldownDelayCheck;
+    uint32 infTime = GameTime::GetGameTimeMS().count() + infinityCooldownDelayCheck;
     SpellCooldowns::iterator itr, next;
 
     for (itr = player->GetSpellCooldownMap().begin(); itr != player->GetSpellCooldownMap().end(); itr = next)
@@ -88,7 +89,7 @@ void DuelReset::RestoreCooldownStateAfterDuel(Player* player)
     sDuelReset->ResetSpellCooldowns(player, false);
 
     SpellCooldowns playerSavedDuelCooldowns = savedDuelCooldownsMap->second;
-    uint32 curMSTime = World::GetGameTimeMS();
+    uint32 curMSTime = GameTime::GetGameTimeMS().count();
     uint32 infTime = curMSTime + infinityCooldownDelayCheck;
 
     // add all profession CDs created while in duel (if any)
