@@ -43,12 +43,12 @@ void DuelReset::ResetSpellCooldowns(Player* player, bool onStartDuel)
         uint32 remainingCooldown = player->GetSpellCooldownDelay(spellInfo->Id);
         int32 totalCooldown = spellInfo->RecoveryTime;
         int32 categoryCooldown = spellInfo->CategoryRecoveryTime;
-        player->ApplySpellMod(spellInfo->Id, SPELLMOD_COOLDOWN, totalCooldown, nullptr);
+        player->ApplySpellMod<SPELLMOD_COOLDOWN>(spellInfo->Id, totalCooldown, nullptr);
         if (int32 cooldownMod = player->GetTotalAuraModifier(SPELL_AURA_MOD_COOLDOWN))
             totalCooldown += cooldownMod * IN_MILLISECONDS;
 
         if (!spellInfo->HasAttribute(SPELL_ATTR6_NO_CATEGORY_COOLDOWN_MODS))
-            player->ApplySpellMod(spellInfo->Id, SPELLMOD_COOLDOWN, categoryCooldown, nullptr);
+            player->ApplySpellMod<SPELLMOD_COOLDOWN>(spellInfo->Id, categoryCooldown, nullptr);
 
         // Clear cooldown if < 10min & (passed time > 30sec or onDuelEnd)
         if (remainingCooldown > 0
