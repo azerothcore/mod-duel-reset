@@ -72,7 +72,8 @@ void DuelReset::ResetSpellCooldowns(Player* player, bool onStartDuel)
     }
 }
 
-void DuelReset::SaveCooldownStateBeforeDuel(Player* player) {
+void DuelReset::SaveCooldownStateBeforeDuel(Player* player)
+{
 
     if(!player)
         return;
@@ -139,7 +140,8 @@ void DuelReset::SaveHealthBeforeDuel(Player* player)
     m_healthBeforeDuel[player] = player->GetHealth();
 }
 
-void DuelReset::RestoreHealthAfterDuel(Player* player) {
+void DuelReset::RestoreHealthAfterDuel(Player* player)
+{
     PlayersHealthMap::iterator savedPlayerHealth = m_healthBeforeDuel.find(player);
     if (savedPlayerHealth == m_healthBeforeDuel.end())
         return;
@@ -148,14 +150,16 @@ void DuelReset::RestoreHealthAfterDuel(Player* player) {
     m_healthBeforeDuel.erase(player);
 }
 
-void DuelReset::SaveManaBeforeDuel(Player* player) {
+void DuelReset::SaveManaBeforeDuel(Player* player)
+{
     if(!player)
         return;
 
     m_manaBeforeDuel[player] = player->GetPower(POWER_MANA);
 }
 
-void DuelReset::RestoreManaAfterDuel(Player* player) {
+void DuelReset::RestoreManaAfterDuel(Player* player)
+{
     PlayersManaMap::iterator savedPlayerMana = m_manaBeforeDuel.find(player);
     if (savedPlayerMana == m_manaBeforeDuel.end())
         return;
