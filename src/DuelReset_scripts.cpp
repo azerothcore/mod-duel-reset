@@ -23,7 +23,8 @@
 #include "SpellInfo.h"
 #include "DuelReset.h"
 
-class DuelResetAfterConfigLoad : public WorldScript {
+class DuelResetAfterConfigLoad : public WorldScript
+{
 public:
     DuelResetAfterConfigLoad() : WorldScript("DuelResetAfterConfigLoad") { }
 
@@ -50,7 +51,8 @@ public:
         }
 
         // Cooldowns reset
-        if (sDuelReset->GetResetCooldownsEnabled()) {
+        if (sDuelReset->GetResetCooldownsEnabled())
+        {
             sDuelReset->SaveCooldownStateBeforeDuel(player1);
             sDuelReset->SaveCooldownStateBeforeDuel(player2);
 
@@ -59,15 +61,18 @@ public:
         }
 
         // Health and mana reset
-        if (sDuelReset->GetResetHealthEnabled()) {
+        if (sDuelReset->GetResetHealthEnabled())
+        {
             sDuelReset->SaveHealthBeforeDuel(player1);
-            if (player1->getPowerType() == POWER_MANA || player1->getClass() == CLASS_DRUID) {
+            if (player1->getPowerType() == POWER_MANA || player1->getClass() == CLASS_DRUID)
+            {
                 sDuelReset->SaveManaBeforeDuel(player1);
             }
             player1->ResetAllPowers();
 
             sDuelReset->SaveHealthBeforeDuel(player2);
-            if (player2->getPowerType() == POWER_MANA || player2->getClass() == CLASS_DRUID) {
+            if (player2->getPowerType() == POWER_MANA || player2->getClass() == CLASS_DRUID)
+            {
                 sDuelReset->SaveManaBeforeDuel(player2);
             }
             player2->ResetAllPowers();
@@ -75,18 +80,21 @@ public:
     }
 
     // Called when a duel ends
-    void OnDuelEnd(Player *winner, Player *loser, DuelCompleteType type) override {
+    void OnDuelEnd(Player *winner, Player *loser, DuelCompleteType type) override
+    {
         // Checking zone here is not necessary and would open options or abuse
         // do not reset anything if DUEL_INTERRUPTED or DUEL_FLED
         if (type == DUEL_WON) {
             // Cooldown restore
-            if (sDuelReset->GetResetCooldownsEnabled()) {
+            if (sDuelReset->GetResetCooldownsEnabled())
+            {
                 sDuelReset->RestoreCooldownStateAfterDuel(winner);
                 sDuelReset->RestoreCooldownStateAfterDuel(loser);
             }
 
             // Health and mana restore
-            if (sDuelReset->GetResetHealthEnabled()) {
+            if (sDuelReset->GetResetHealthEnabled())
+            {
                 sDuelReset->RestoreHealthAfterDuel(winner);
                 sDuelReset->RestoreHealthAfterDuel(loser);
 
