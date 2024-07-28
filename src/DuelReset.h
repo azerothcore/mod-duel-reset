@@ -1,10 +1,7 @@
 #ifndef _DUELRESET_H_
 #define _DUELRESET_H_
 
-#include "Common.h"
 #include "Player.h"
-#include "Pet.h"
-#include "SpellInfo.h"
 #include "Config.h"
 #include <unordered_map>
 

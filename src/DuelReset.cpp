@@ -19,6 +19,8 @@
 
 #include "DuelReset.h"
 #include "GameTime.h"
+#include "Pet.h"
+#include "SpellMgr.h"
 
 DuelReset* DuelReset::instance()
 {
