@@ -44,7 +44,7 @@ public:
     DuelResetScript() : PlayerScript("DuelResetScript") {}
 
     // Called when a duel starts (after 3s countdown)
-    void OnDuelStart(Player *player1, Player *player2) override {
+    void OnPlayerDuelStart(Player *player1, Player *player2) override {
         // Check if Reset is allowed in area or zone
         if (!sDuelReset->IsAllowedInArea(player1)) {
             return;
@@ -80,7 +80,7 @@ public:
     }
 
     // Called when a duel ends
-    void OnDuelEnd(Player *winner, Player *loser, DuelCompleteType type) override
+    void OnPlayerDuelEnd(Player *winner, Player *loser, DuelCompleteType type) override
     {
         // Checking zone here is not necessary and would open options or abuse
         // do not reset anything if DUEL_INTERRUPTED or DUEL_FLED
