@@ -26,7 +26,10 @@
 class DuelResetAfterConfigLoad : public WorldScript
 {
 public:
-    DuelResetAfterConfigLoad() : WorldScript("DuelResetAfterConfigLoad") { }
+    DuelResetAfterConfigLoad() : WorldScript("DuelResetAfterConfigLoad", {
+        WORLDHOOK_ON_AFTER_CONFIG_LOAD,
+        WORLDHOOK_ON_STARTUP
+    }) { }
 
     void OnAfterConfigLoad(bool reload) override
     {
@@ -41,7 +44,10 @@ public:
 
 class DuelResetScript : public PlayerScript {
 public:
-    DuelResetScript() : PlayerScript("DuelResetScript") {}
+    DuelResetScript() : PlayerScript("DuelResetScript", {
+        PLAYERHOOK_ON_DUEL_START,
+        PLAYERHOOK_ON_DUEL_END
+    }) {}
 
     // Called when a duel starts (after 3s countdown)
     void OnPlayerDuelStart(Player *player1, Player *player2) override {
