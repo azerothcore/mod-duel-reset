@@ -31,7 +31,7 @@ You can do clone it via git under the azerothcore/modules directory:
 
 `cd path/to/azerothcore/modules`
 
-`git clone https://github.com/azerothcore/mod-duelreset.git`
+`git clone https://github.com/azerothcore/mod-duel-reset.git`
 
 or you can manually [download the module](https://github.com/azerothcore/mod-duelreset/archive/master.zip), unzip the DuelReset folder and place it under the `azerothcore/modules` directory.
 
