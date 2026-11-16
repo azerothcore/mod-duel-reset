@@ -62,8 +62,10 @@ public:
             sDuelReset->SaveCooldownStateBeforeDuel(player1);
             sDuelReset->SaveCooldownStateBeforeDuel(player2);
 
-            sDuelReset->ResetSpellCooldowns(player1, true);
-            sDuelReset->ResetSpellCooldowns(player2, true);
+            sDuelReset->RemoveSpellSummons(player1,
+                sDuelReset->ResetSpellCooldowns(player1, true));
+            sDuelReset->RemoveSpellSummons(player2,
+                sDuelReset->ResetSpellCooldowns(player2, true));
         }
 
         // Health and mana reset

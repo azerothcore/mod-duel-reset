@@ -13,9 +13,11 @@ public:
     void LoadConfig(bool reload);
     void FillWhitelist(std::string zonesAreas, std::vector<uint32> &whitelist);
 
-    void ResetSpellCooldowns(Player* player, bool onStartDuel);
+    std::vector<uint32> ResetSpellCooldowns(Player* player, bool onStartDuel);
     void SaveCooldownStateBeforeDuel(Player* player);
     void RestoreCooldownStateAfterDuel(Player* player);
+    void RemoveSpellSummons(Player* player,
+        std::vector<uint32> const& spellIds);
 
     void SaveHealthBeforeDuel(Player* player);
     void SaveManaBeforeDuel(Player* player);
