@@ -75,6 +75,10 @@ public:
                 sDuelReset->SaveManaBeforeDuel(player1);
             }
             player1->ResetAllPowers();
+            // ResetAllPowers only fills the active power; druids in Cat/Bear
+            // Form keep their mana in the background
+            if (player1->getClass() == CLASS_DRUID)
+                player1->SetPower(POWER_MANA, player1->GetMaxPower(POWER_MANA));
 
             sDuelReset->SaveHealthBeforeDuel(player2);
             if (player2->getPowerType() == POWER_MANA || player2->getClass() == CLASS_DRUID)
@@ -82,6 +86,8 @@ public:
                 sDuelReset->SaveManaBeforeDuel(player2);
             }
             player2->ResetAllPowers();
+            if (player2->getClass() == CLASS_DRUID)
+                player2->SetPower(POWER_MANA, player2->GetMaxPower(POWER_MANA));
         }
     }
 
