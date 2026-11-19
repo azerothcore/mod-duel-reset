@@ -19,8 +19,10 @@
 
 #include "DuelReset.h"
 #include "GameTime.h"
+#include "MapDefines.h"
 #include "Pet.h"
 #include "SpellMgr.h"
+#include "TemporarySummon.h"
 
 DuelReset* DuelReset::instance()
 {
@@ -28,8 +30,10 @@ DuelReset* DuelReset::instance()
     return &instance;
 }
 
-void DuelReset::ResetSpellCooldowns(Player* player, bool onStartDuel)
+std::vector<uint32> DuelReset::ResetSpellCooldowns(Player* player,
+    bool onStartDuel)
 {
+    std::vector<uint32> resetSpellIds;
     uint32 infTime = GameTime::GetGameTimeMS().count() + infinityCooldownDelayCheck;
     SpellCooldowns::iterator itr, next;
 
@@ -61,7 +65,10 @@ void DuelReset::ResetSpellCooldowns(Player* player, bool onStartDuel)
             && (onStartDuel ? (totalCooldown - remainingCooldown) > m_cooldownAge * IN_MILLISECONDS : true)
             && (onStartDuel ? (categoryCooldown - remainingCooldown) > m_cooldownAge * IN_MILLISECONDS : true)
             )
+        {
+            resetSpellIds.push_back(itr->first);
             player->RemoveSpellCooldown(itr->first, true);
+        }
     }
 
     if (Pet* pet = player->GetPet())
@@ -72,6 +79,8 @@ void DuelReset::ResetSpellCooldowns(Player* player, bool onStartDuel)
         // actually clear cooldowns
         pet->m_CreatureSpellCooldowns.clear();
     }
+
+    return resetSpellIds;
 }
 
 void DuelReset::SaveCooldownStateBeforeDuel(Player* player)
@@ -89,7 +98,8 @@ void DuelReset::RestoreCooldownStateAfterDuel(Player* player)
     if (savedDuelCooldownsMap == m_spellCooldownsBeforeDuel.end())
         return;
 
-    sDuelReset->ResetSpellCooldowns(player, false);
+    std::vector<uint32> resetSpellIds =
+        sDuelReset->ResetSpellCooldowns(player, false);
 
     SpellCooldowns playerSavedDuelCooldowns = savedDuelCooldownsMap->second;
     uint32 curMSTime = GameTime::GetGameTimeMS().count();
@@ -132,6 +142,55 @@ void DuelReset::RestoreCooldownStateAfterDuel(Player* player)
     WorldPacket data;
     player->BuildCooldownPacket(data, SPELL_COOLDOWN_FLAG_INCLUDE_EVENT_COOLDOWNS, cooldowns);
     player->SendDirectMessage(&data);
+
+    // After the restore, so summons of spells on cooldown again stay
+    RemoveSpellSummons(player, resetSpellIds);
+}
+
+void DuelReset::RemoveSpellSummons(Player* player,
+    std::vector<uint32> const& spellIds)
+{
+    for (uint32 spellId : spellIds)
+    {
+        // Spell is on cooldown again, its summon stays
+        if (player->HasSpellCooldown(spellId))
+            continue;
+
+        SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
+        if (!spellInfo)
+            continue;
+
+        // Only direct summons; SPELL_EFFECT_SUMMON_PET is the controlled pet
+        std::vector<uint32> entries;
+        for (SpellEffectInfo const& effect : spellInfo->GetEffects())
+            if (effect.Effect == SPELL_EFFECT_SUMMON && effect.MiscValue > 0)
+                entries.push_back(uint32(effect.MiscValue));
+
+        if (entries.empty())
+            continue;
+
+        std::list<Creature*> creatures;
+        player->GetCreatureListWithEntryInGrid(creatures, entries,
+            SIZE_OF_GRIDS);
+
+        for (Creature* creature : creatures)
+        {
+            if (creature->IsPet())
+                continue;
+
+            TempSummon* summon = creature->ToTempSummon();
+            if (!summon || summon->GetSummonerGUID() != player->GetGUID())
+                continue;
+
+            // Default summon path leaves it 0, guardian path stores the spell
+            uint32 createdBySpell =
+                creature->GetUInt32Value(UNIT_CREATED_BY_SPELL);
+            if (createdBySpell && createdBySpell != spellId)
+                continue;
+
+            summon->UnSummon();
+        }
+    }
 }
 
 void DuelReset::SaveHealthBeforeDuel(Player* player)
