@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "Config.h"
 #include <unordered_map>
+#include <unordered_set>
 
 class DuelReset
 {
@@ -39,11 +40,10 @@ private:
     std::vector<uint32> m_areaWhitelist;
 
     // Player value maps
-    typedef std::unordered_map<Player*, SpellCooldowns> PlayersCooldownMap;
     typedef std::unordered_map<Player*, uint32> PlayersHealthMap;
     typedef std::unordered_map<Player*, uint32> PlayersManaMap;
 
-    PlayersCooldownMap m_spellCooldownsBeforeDuel;
+    std::unordered_set<Player*> m_cooldownsSavedBeforeDuel;
     PlayersHealthMap m_healthBeforeDuel;
     PlayersManaMap m_manaBeforeDuel;
 };
