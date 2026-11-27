@@ -21,6 +21,7 @@
 #include "GameTime.h"
 #include "MapDefines.h"
 #include "Pet.h"
+#include "SpellHistory.h"
 #include "SpellMgr.h"
 #include "TemporarySummon.h"
 
@@ -34,19 +35,16 @@ std::vector<uint32> DuelReset::ResetSpellCooldowns(Player* player,
     bool onStartDuel)
 {
     std::vector<uint32> resetSpellIds;
-    uint32 infTime = GameTime::GetGameTimeMS().count() + infinityCooldownDelayCheck;
-    SpellCooldowns::iterator itr, next;
+    SpellHistory::Clock::time_point const now = GameTime::GetSystemTime();
 
-    for (itr = player->GetSpellCooldownMap().begin(); itr != player->GetSpellCooldownMap().end(); itr = next)
+    player->GetSpellHistory()->ResetCooldowns([&](SpellHistory::CooldownStorageType::iterator itr) -> bool
     {
-        next = itr;
-        ++next;
         SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(itr->first);
-        if (!spellInfo)
-            continue;
+        if (!spellInfo || itr->second.OnHold || itr->second.CooldownEnd <= now)
+            return false;
 
         // Get correct spell cooldown times
-        uint32 remainingCooldown = player->GetSpellCooldownDelay(spellInfo->Id);
+        uint32 remainingCooldown = uint32(std::chrono::duration_cast<std::chrono::milliseconds>(itr->second.CooldownEnd - now).count());
         int32 totalCooldown = spellInfo->RecoveryTime;
         int32 categoryCooldown = spellInfo->CategoryRecoveryTime;
         player->ApplySpellMod(spellInfo->Id, SPELLMOD_COOLDOWN, totalCooldown, nullptr);
@@ -57,9 +55,7 @@ std::vector<uint32> DuelReset::ResetSpellCooldowns(Player* player,
             player->ApplySpellMod(spellInfo->Id, SPELLMOD_COOLDOWN, categoryCooldown, nullptr);
 
         // Clear cooldown if < 10min & (passed time > 30sec or onDuelEnd)
-        if (remainingCooldown > 0
-            && itr->second.end < infTime
-            && totalCooldown < 10 * MINUTE * IN_MILLISECONDS
+        if (totalCooldown < 10 * MINUTE * IN_MILLISECONDS
             && categoryCooldown < 10 * MINUTE * IN_MILLISECONDS
             && remainingCooldown < 10 * MINUTE * IN_MILLISECONDS
             && (onStartDuel ? (totalCooldown - remainingCooldown) > m_cooldownAge * IN_MILLISECONDS : true)
@@ -67,18 +63,14 @@ std::vector<uint32> DuelReset::ResetSpellCooldowns(Player* player,
             )
         {
             resetSpellIds.push_back(itr->first);
-            player->RemoveSpellCooldown(itr->first, true);
+            return true;
         }
-    }
+
+        return false;
+    }, true);
 
     if (Pet* pet = player->GetPet())
-    {
-        for (CreatureSpellCooldowns::const_iterator itr2 = pet->m_CreatureSpellCooldowns.begin(); itr2 != pet->m_CreatureSpellCooldowns.end(); ++itr2)
-            player->SendClearCooldown(itr2->first, pet);
-
-        // actually clear cooldowns
-        pet->m_CreatureSpellCooldowns.clear();
-    }
+        pet->GetSpellHistory()->ResetAllCooldowns();
 
     return resetSpellIds;
 }
@@ -89,59 +81,19 @@ void DuelReset::SaveCooldownStateBeforeDuel(Player* player)
     if(!player)
         return;
 
-    m_spellCooldownsBeforeDuel[player] = player->GetSpellCooldownMap();
+    player->GetSpellHistory()->SaveCooldownStateBeforeDuel();
+    m_cooldownsSavedBeforeDuel.insert(player);
 }
 
 void DuelReset::RestoreCooldownStateAfterDuel(Player* player)
 {
-    PlayersCooldownMap::iterator savedDuelCooldownsMap = m_spellCooldownsBeforeDuel.find(player);
-    if (savedDuelCooldownsMap == m_spellCooldownsBeforeDuel.end())
+    if (!m_cooldownsSavedBeforeDuel.erase(player))
         return;
 
     std::vector<uint32> resetSpellIds =
         sDuelReset->ResetSpellCooldowns(player, false);
 
-    SpellCooldowns playerSavedDuelCooldowns = savedDuelCooldownsMap->second;
-    uint32 curMSTime = GameTime::GetGameTimeMS().count();
-    uint32 infTime = curMSTime + infinityCooldownDelayCheck;
-
-    // add all profession CDs created while in duel (if any)
-    for (auto itr = player->GetSpellCooldownMap().begin(); itr != player->GetSpellCooldownMap().end(); ++itr)
-    {
-        SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(itr->first);
-
-        if (spellInfo && (spellInfo->RecoveryTime > 10 * MINUTE * IN_MILLISECONDS || spellInfo->CategoryRecoveryTime > 10 * MINUTE * IN_MILLISECONDS))
-        {
-            playerSavedDuelCooldowns[itr->first] = player->GetSpellCooldownMap()[itr->first];
-        }
-    }
-
-    // check for spell with infinity delay active before and during the duel
-    for (auto itr = playerSavedDuelCooldowns.begin(); itr != playerSavedDuelCooldowns.end(); ++itr)
-    {
-        if (itr->second.end < infTime && player->GetSpellCooldownMap()[itr->first].end < infTime)
-            player->AddSpellCooldown(itr->first, itr->second.itemid, (itr->second.end > curMSTime ? itr->second.end - curMSTime : 0), itr->second.needSendToClient, false);
-    }
-
-    // update the client: restore old cooldowns
-    PacketCooldowns cooldowns;
-
-    for (auto itr = player->GetSpellCooldownMap().begin(); itr != player->GetSpellCooldownMap().end(); ++itr)
-    {
-        uint32 cooldown = itr->second.end > curMSTime ? itr->second.end - curMSTime : 0;
-
-        // cooldownDuration must be between 0 and 10 minutes in order to avoid any visual bugs
-        if (cooldown <= 0 || cooldown > 10 * MINUTE * IN_MILLISECONDS || itr->second.end >= infTime)
-            continue;
-
-        cooldowns[itr->first] = cooldown;
-    }
-
-    m_spellCooldownsBeforeDuel.erase(player);
-
-    WorldPacket data;
-    player->BuildCooldownPacket(data, SPELL_COOLDOWN_FLAG_INCLUDE_EVENT_COOLDOWNS, cooldowns);
-    player->SendDirectMessage(&data);
+    player->GetSpellHistory()->RestoreCooldownStateAfterDuel();
 
     // After the restore, so summons of spells on cooldown again stay
     RemoveSpellSummons(player, resetSpellIds);
@@ -153,7 +105,7 @@ void DuelReset::RemoveSpellSummons(Player* player,
     for (uint32 spellId : spellIds)
     {
         // Spell is on cooldown again, its summon stays
-        if (player->HasSpellCooldown(spellId))
+        if (player->GetSpellHistory()->HasCooldown(spellId))
             continue;
 
         SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
